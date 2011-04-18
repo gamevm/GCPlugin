@@ -12,7 +12,15 @@ public class SourceRule implements IPredicateRule {
 	
 	@Override
 	public IToken evaluate(ICharacterScanner scanner) {
-		return sourceToken;
+		int c = scanner.read();
+		while (c != ICharacterScanner.EOF) {
+			if ((char)c == '/') {
+				scanner.unread();
+				return sourceToken;
+			}
+			c = scanner.read();
+		}
+		return Token.UNDEFINED;
 	}
 
 	@Override
@@ -22,6 +30,6 @@ public class SourceRule implements IPredicateRule {
 
 	@Override
 	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
-		return sourceToken;
+		return evaluate(scanner);
 	}
 }
