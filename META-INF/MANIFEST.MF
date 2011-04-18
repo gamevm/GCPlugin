@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GCPlugin
+Bundle-SymbolicName: GCPlugin; singleton:=true
+Bundle-Version: 0.0.1.0
+Bundle-Activator: com.gamevm.plugin.GCPlugin
+Bundle-Vendor: gamevm.com
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

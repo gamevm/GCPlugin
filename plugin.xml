@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="builder.GCBuilder"
+         name="GC Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.gamevm.plugin.builder.GCBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="project.GCProjectNature"
+         name="GC Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.gamevm.plugin.builder.GCProjectNature">
+         </run>
+      </runtime>
+      <builder
+            id="GCPlugin.builder.GCBuilder">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="GCPlugin.contribution1">
+         <action
+               label="Add/Remove Sample Nature"
+               class="com.gamevm.plugin.builder.ToggleNatureAction"
+               menubarPath="additions"
+               enablesFor="+"
+               id="GCPlugin.addRemoveNatureAction">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.gamevm.plugin.editors.GCEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="gc"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.editors.GCEditor"
+            name="GC Editor">
+      </editor>
+   </extension>
+
+</plugin>
