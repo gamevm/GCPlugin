@@ -13,14 +13,17 @@ public class SourceRule implements IPredicateRule {
 	@Override
 	public IToken evaluate(ICharacterScanner scanner) {
 		int c = scanner.read();
+		if (c == ICharacterScanner.EOF)
+			return Token.EOF;
+		
 		while (c != ICharacterScanner.EOF) {
 			if ((char)c == '/') {
-				scanner.unread();
-				return sourceToken;
+				break;
 			}
 			c = scanner.read();
 		}
-		return Token.UNDEFINED;
+		scanner.unread();
+		return sourceToken;
 	}
 
 	@Override

@@ -1,11 +1,13 @@
 package com.gamevm.plugin.builder;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -16,12 +18,24 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
+
+import com.gamevm.compiler.assembly.ClassDefinition;
+import com.gamevm.compiler.assembly.GClassLoader;
+import com.gamevm.compiler.parser.ASTNode;
+import com.gamevm.compiler.parser.GCASTLexer;
+import com.gamevm.compiler.parser.GCASTParser;
+import com.gamevm.compiler.parser.ParserError;
+import com.gamevm.compiler.translator.TranslationException;
+import com.gamevm.compiler.translator.ast.ASTTranslator;
+import com.gamevm.compiler.translator.ast.SymbolTable;
+import com.gamevm.execution.ast.tree.Statement;
 
 public class GCBuilder extends IncrementalProjectBuilder {
 
+	public static final String BUILDER_ID = "com.gamevm.plugin.builder.gcbuilder";
+
+	private static final String MARKER_TYPE = "com.gamevm.plugin.marker.compilationError";
+	
 	class SampleDeltaVisitor implements IResourceDeltaVisitor {
 		/*
 		 * (non-Javadoc)
@@ -33,14 +47,14 @@ public class GCBuilder extends IncrementalProjectBuilder {
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				// handle added resource
-				checkXML(resource);
+				compile(resource);
 				break;
 			case IResourceDelta.REMOVED:
 				// handle removed resource
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
-				checkXML(resource);
+				compile(resource);
 				break;
 			}
 			//return true to continue visiting children.
@@ -50,43 +64,11 @@ public class GCBuilder extends IncrementalProjectBuilder {
 
 	class SampleResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
-			checkXML(resource);
+			compile(resource);
 			//return true to continue visiting children.
 			return true;
 		}
 	}
-
-	class XMLErrorHandler extends DefaultHandler {
-		
-		private IFile file;
-
-		public XMLErrorHandler(IFile file) {
-			this.file = file;
-		}
-
-		private void addMarker(SAXParseException e, int severity) {
-			GCBuilder.this.addMarker(file, e.getMessage(), e
-					.getLineNumber(), severity);
-		}
-
-		public void error(SAXParseException exception) throws SAXException {
-			addMarker(exception, IMarker.SEVERITY_ERROR);
-		}
-
-		public void fatalError(SAXParseException exception) throws SAXException {
-			addMarker(exception, IMarker.SEVERITY_ERROR);
-		}
-
-		public void warning(SAXParseException exception) throws SAXException {
-			addMarker(exception, IMarker.SEVERITY_WARNING);
-		}
-	}
-
-	public static final String BUILDER_ID = "GCPlugin.builder.GCBuilder";
-
-	private static final String MARKER_TYPE = "GCPlugin.xmlProblem";
-
-	private SAXParserFactory parserFactory;
 
 	private void addMarker(IFile file, String message, int lineNumber,
 			int severity) {
@@ -123,15 +105,36 @@ public class GCBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
-	void checkXML(IResource resource) {
-		if (resource instanceof IFile && resource.getName().endsWith(".xml")) {
+	void compile(IResource resource) {
+		if (resource instanceof IFile && resource.getName().endsWith(".gc")) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
-			XMLErrorHandler reporter = new XMLErrorHandler(file);
+			
 			try {
-				getParser().parse(file.getContents(), reporter);
-			} catch (Exception e1) {
+				CharStream charStream = new ANTLRInputStream(file.getContents());
+				GCASTLexer lexer = new GCASTLexer(charStream);
+				GCASTParser parser = new GCASTParser(new CommonTokenStream(lexer));
+				ClassDefinition<ASTNode> ast = parser.program();
+				
+				List<ParserError> errors = parser.getErrors();
+				for (ParserError e : errors) {
+					addMarker(file, e.getMessage(parser), e.getLine(), IMarker.SEVERITY_ERROR);
+				}
+				
+				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GClassLoader(getProject().getLocation().toFile())), true);
+				
+				ClassDefinition<Statement> statements = new ClassDefinition<Statement>(ast, translator);
+				
+			} catch (IOException e) {
+				addMarker(file, e.getLocalizedMessage(), 1, IMarker.SEVERITY_ERROR);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			} catch (RecognitionException e) {
+				addMarker(file, e.getLocalizedMessage(), e.line, IMarker.SEVERITY_ERROR);
+			} catch (TranslationException e) {
+				addMarker(file, e.getLocalizedMessage(), e.getNode().getStartLine(), IMarker.SEVERITY_ERROR);
 			}
+			
 		}
 	}
 
@@ -148,14 +151,6 @@ public class GCBuilder extends IncrementalProjectBuilder {
 			getProject().accept(new SampleResourceVisitor());
 		} catch (CoreException e) {
 		}
-	}
-
-	private SAXParser getParser() throws ParserConfigurationException,
-			SAXException {
-		if (parserFactory == null) {
-			parserFactory = SAXParserFactory.newInstance();
-		}
-		return parserFactory.newSAXParser();
 	}
 
 	protected void incrementalBuild(IResourceDelta delta,

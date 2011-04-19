@@ -23,17 +23,20 @@ public class TextAttributeManager {
 		this.colorManager = colorManager;
 		this.defaultFont = defaultFont;
 		
-		boldFont = new Font(defaultFont.getDevice(), defaultFont.getFontData());
-		for (FontData d : boldFont.getFontData()) {
+		FontData[] boldFontData = defaultFont.getFontData();
+		for (FontData d : boldFontData) {
 			d.setStyle(SWT.BOLD);
 		}
+		boldFont = new Font(defaultFont.getDevice(), boldFontData);
+		
 		
 		Color textColor = colorManager.getColor(GCColorConstants.TEXT);
+		Color keywordColor = colorManager.getColor(GCColorConstants.KEYWORD);
 		Color defaultBackground = colorManager.getColor(GCColorConstants.DEFAULT_BACKGROUND);
 		
 		attributes = new TextAttribute[] {
 				new TextAttribute(textColor),
-				new TextAttribute(textColor, defaultBackground, 0, boldFont),
+				new TextAttribute(keywordColor, null, 0, boldFont),
 				new TextAttribute(textColor),
 				new TextAttribute(textColor)
 		};

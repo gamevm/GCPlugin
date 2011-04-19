@@ -3,7 +3,7 @@
 <plugin>
 
    <extension
-         id="builder.GCBuilder"
+         id="com.gamevm.plugin.builder.gcbuilder"
          name="GC Builder"
          point="org.eclipse.core.resources.builders">
       <builder
@@ -14,7 +14,7 @@
       </builder>
    </extension>
    <extension
-         id="project.GCProjectNature"
+         id="com.gamevm.plugin.builder.gcnature"
          name="GC Project Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -23,7 +23,7 @@
          </run>
       </runtime>
       <builder
-            id="GCPlugin.builder.GCBuilder">
+            id="com.gamevm.plugin.builder.gcbuilder">
       </builder>
    </extension>
    <extension
@@ -33,18 +33,11 @@
             objectClass="org.eclipse.core.resources.IProject"
             nameFilter="*"
             id="GCPlugin.contribution1">
-         <action
-               label="Add/Remove Sample Nature"
-               class="com.gamevm.plugin.builder.ToggleNatureAction"
-               menubarPath="additions"
-               enablesFor="+"
-               id="GCPlugin.addRemoveNatureAction">
-         </action>
       </objectContribution>
    </extension>
    <extension
-         id="xmlProblem"
-         name="XML Problem"
+         id="com.gamevm.plugin.marker.compilationError"
+         name="GC Compilation Error"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
@@ -63,6 +56,21 @@
             id="com.gamevm.plugin.editors.GCEditor"
             name="GC Editor">
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.gamevm.plugin.wizards.newcategory"
+            name="GC">
+      </category>
+      <wizard
+            category="com.gamevm.plugin.wizards.newcategory"
+            class="com.gamevm.plugin.wizards.project.NewGCProjectWizard"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.wizards.project"
+            name="GC Project"
+            project="true">
+      </wizard>
    </extension>
 
 </plugin>

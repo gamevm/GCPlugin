@@ -11,7 +11,7 @@ public class GCProjectNature implements IProjectNature {
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "GCPlugin.project.GCProjectNature";
+	public static final String NATURE_ID = "com.gamevm.plugin.builder.gcnature";
 
 	private IProject project;
 

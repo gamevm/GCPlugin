@@ -11,7 +11,7 @@ public class GCEditor extends TextEditor {
 
 	public GCEditor() {
 		super();
-		textAttributeManager = new TextAttributeManager(new ColorManager(), new Font(Display.getCurrent(), "Courier New", 12, SWT.NORMAL));
+		textAttributeManager = new TextAttributeManager(new ColorManager(), new Font(Display.getCurrent(), "Courier New", 10, SWT.NORMAL));
 		setSourceViewerConfiguration(new GCConfiguration(textAttributeManager));
 		setDocumentProvider(new GCDocumentProvider());
 	}
