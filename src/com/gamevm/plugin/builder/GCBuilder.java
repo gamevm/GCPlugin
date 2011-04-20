@@ -9,6 +9,7 @@ import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -121,7 +122,9 @@ public class GCBuilder extends IncrementalProjectBuilder {
 					addMarker(file, e.getMessage(parser), e.getLine(), IMarker.SEVERITY_ERROR);
 				}
 				
-				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GClassLoader(getProject().getLocation().toFile())), true);
+				IFolder classPath = getProject().getFolder("bin");
+				
+				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GClassLoader(classPath.getLocation().toFile())), true);
 				
 				ClassDefinition<Statement> statements = new ClassDefinition<Statement>(ast, translator);
 				

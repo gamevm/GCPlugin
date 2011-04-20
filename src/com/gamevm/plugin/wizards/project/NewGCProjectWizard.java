@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -63,6 +64,9 @@ public class NewGCProjectWizard extends Wizard implements INewWizard {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			folder.refreshLocal(IResource.DEPTH_INFINITE, null);
+			
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}

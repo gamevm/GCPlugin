@@ -72,5 +72,14 @@
             project="true">
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.gamevm.plugin.launch.GCLaunchDelegate"
+            id="com.gamevm.plugin.launch.configuration"
+            modes="run, debug"
+            name="Game Application">
+      </launchConfigurationType>
+   </extension>
 
 </plugin>
