@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="com.gamevm.plugin.builder.gcbuilder"
+         name="GC Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="com.gamevm.plugin.builder.GCBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="com.gamevm.plugin.builder.gcnature"
+         name="GC Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.gamevm.plugin.builder.GCProjectNature">
+         </run>
+      </runtime>
+      <builder
+            id="com.gamevm.plugin.builder.gcbuilder">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="GCPlugin.contribution1">
+      </objectContribution>
+   </extension>
+   <extension
+         id="com.gamevm.plugin.marker.compilationError"
+         name="GC Compilation Error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.gamevm.plugin.editors.GCEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="gc"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.editors.GCEditor"
+            name="GC Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.gamevm.plugin.wizards.newcategory"
+            name="GC">
+      </category>
+      <wizard
+            category="com.gamevm.plugin.wizards.newcategory"
+            class="com.gamevm.plugin.wizards.project.NewGCProjectWizard"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.wizards.project"
+            name="GC Project"
+            project="true">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.gamevm.plugin.launch.GCLaunchDelegate"
+            delegateDescription="Launches a new game in the gamevm."
+            delegateName="GC Launch Configuration"
+            id="com.gamevm.plugin.launch.configuration"
+            modes="run, debug"
+            name="Game Application"
+            sourceLocatorId="com.gamevm.plugin.launch.sourceLocator"
+            sourcePathComputerId="com.gamevm.plugin.launch.sourcePathComputer">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="com.gamevm.plugin.launch.GCSourcePathComputer"
+            id="com.gamevm.plugin.launch.sourcePathComputer">
+      </sourcePathComputer>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            class="com.gamevm.plugin.launch.GCSourceLocator"
+            id="com.gamevm.plugin.launch.sourceLocator"
+            name="gcSourceLocator">
+      </sourceLocator>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="com.gamevm.plugin.launch.GCLaunchConfigurationTabGroup"
+            id="com.gamevm.plugin.launch.tabgroup"
+            type="com.gamevm.plugin.launch.configuration">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="com.gamevm.plugin.launch.configuration"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.launch.image">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="com.gamevm.plugin.launch.GCLaunchShortcut"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.launch.shortcut"
+            label="Run Game Application"
+            modes="run, debug">
+         <contextualLaunch>
+            <enablement>
+             <with variable="selection">
+               <count value="1"/>
+               <iterate>
+                 <or>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.gc"/>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.gbc"/>
+                   <!-- <instanceof value="org.eclipse.jdt.core.IJavaElement"/> -->
+                 </or>
+                 <!-- <test property="org.eclipse.jdt.debug.ui.hasMainType"/> -->
+               </iterate>
+             </with>
+           </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+
+</plugin>
