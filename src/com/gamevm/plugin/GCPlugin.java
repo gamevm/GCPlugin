@@ -1,5 +1,10 @@
 package com.gamevm.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -14,6 +19,8 @@ public class GCPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static GCPlugin plugin;
+	
+	private static File pluginFolder;
 	
 	/**
 	 * The constructor
@@ -58,4 +65,19 @@ public class GCPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	public static File getPluginFolder() {
+        if(pluginFolder == null) {
+            URL url = Platform.getBundle(PLUGIN_ID).getEntry("/");
+            try {
+                url = Platform.resolve(url);
+            }
+            catch(IOException ex) {
+                ex.printStackTrace();
+            }
+            pluginFolder = new File(url.getPath());
+        }
+
+        return pluginFolder;
+ }
 }

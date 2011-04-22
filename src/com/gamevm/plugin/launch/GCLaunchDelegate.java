@@ -12,14 +12,11 @@ import org.eclipse.debug.core.model.IProcess;
 
 public class GCLaunchDelegate implements ILaunchConfigurationDelegate {
 
-	
-	
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		Process p = DebugPlugin.exec(new String[] { "" }, new File(""));
-		IProcess process= DebugPlugin.newProcess(launch, p, "My Process");
-		
+		Process p = DebugPlugin.exec(new String[] { "java", "-cp", "lib/gccompiler.jar;lib/utils.jar", "com.gamevm.execution.VirtualMachine", configuration.getAttribute("mainClassName", "") }, new File("."));
+		IProcess process = DebugPlugin.newProcess(launch, p, "gvm");
 	}
 
 }

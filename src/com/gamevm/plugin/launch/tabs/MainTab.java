@@ -1,14 +1,18 @@
 package com.gamevm.plugin.launch.tabs;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,10 +22,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.gamevm.compiler.assembly.ClassDefinition;
+import com.gamevm.compiler.assembly.GClassLoader;
+import com.gamevm.compiler.parser.ASTNode;
+import com.gamevm.compiler.parser.GCASTLexer;
+import com.gamevm.compiler.parser.GCASTParser;
 import com.gamevm.plugin.builder.GCProjectNature;
 import com.gamevm.plugin.utils.ProjectSelectionDialog;
 import com.gamevm.plugin.utils.SourceFileSelectionDialog;
@@ -32,6 +38,11 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	Text mainClassName;
 	IProject project;
 	IFile mainClass;
+	
+	private GClassLoader classLoader;
+	
+	public MainTab() {
+	}
 	
 	private Text addBrowseGroup(Composite parent, String label, SelectionAdapter browseAction) {
 		Group projectPanel = new Group(parent, SWT.SHADOW_NONE);
@@ -46,6 +57,21 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 		browseProject.setText("Browse...");
 		browseProject.addSelectionListener(browseAction);
 		return text;
+	}
+	
+	private String getClassName(IFile file) {
+		try {
+			CharStream charStream = new ANTLRInputStream(file.getContents());
+			GCASTLexer lexer = new GCASTLexer(charStream);
+			GCASTParser parser = new GCASTParser(new CommonTokenStream(lexer));
+			ClassDefinition<ASTNode> ast = parser.program();
+			//configuration.setAttribute("mainClassLocation", mainClass.getLocation().toPortableString());
+			return ast.getDeclaration().getName();
+		} catch (IOException e) {
+		} catch (CoreException e) {
+		} catch (RecognitionException e) {
+		}
+		return "";
 	}
 	
 	@Override
@@ -69,7 +95,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 				SourceFileSelectionDialog dialog = new SourceFileSelectionDialog(getShell(), GCProjectNature.NATURE_ID, "gc");		
 				if (dialog.open() == SourceFileSelectionDialog.OK) {
 					IFile f = (IFile)dialog.getResult()[0];
-					mainClassName.setText(f.getName());
+					mainClassName.setText(getClassName(f));
 					mainClass = f;
 				}
 
@@ -83,14 +109,15 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute("project", "");
-		configuration.setAttribute("mainClass", "");
+		//configuration.setAttribute("mainClassLocation", "");
+		configuration.setAttribute("mainClassName", "");
 	}
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
 			projectName.setText(configuration.getAttribute("project", ""));
-			mainClassName.setText(configuration.getAttribute("mainClass", ""));
+			mainClassName.setText(configuration.getAttribute("mainClassName", ""));
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -99,7 +126,9 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute("project", projectName.getText());
-		configuration.setAttribute("mainClass", mainClass.getLocation().toPortableString());
+		if (mainClass != null) {
+			configuration.setAttribute("mainClassName", mainClassName.getText());
+		}
 	}
 
 	@Override

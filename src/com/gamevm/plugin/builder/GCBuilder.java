@@ -1,6 +1,9 @@
 package com.gamevm.plugin.builder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,7 @@ import com.gamevm.compiler.parser.ParserError;
 import com.gamevm.compiler.translator.TranslationException;
 import com.gamevm.compiler.translator.ast.ASTTranslator;
 import com.gamevm.compiler.translator.ast.SymbolTable;
+import com.gamevm.execution.ast.TreeCodeWriter;
 import com.gamevm.execution.ast.tree.Statement;
 
 public class GCBuilder extends IncrementalProjectBuilder {
@@ -127,6 +131,14 @@ public class GCBuilder extends IncrementalProjectBuilder {
 				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GClassLoader(classPath.getLocation().toFile())), true);
 				
 				ClassDefinition<Statement> statements = new ClassDefinition<Statement>(ast, translator);
+				
+				String name = statements.getDeclaration().getName();
+				File classFile = new File(classPath.getLocation().toFile(), name.replace('.', '/') + ".gbc");
+				classFile.getParentFile().mkdirs();
+				if (!classFile.exists())
+					classFile.createNewFile();
+				OutputStream output = new FileOutputStream(classFile);
+				statements.write(output, new TreeCodeWriter(output));
 				
 			} catch (IOException e) {
 				addMarker(file, e.getLocalizedMessage(), 1, IMarker.SEVERITY_ERROR);

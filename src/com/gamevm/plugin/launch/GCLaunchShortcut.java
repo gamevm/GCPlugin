@@ -1,6 +1,7 @@
 package com.gamevm.plugin.launch;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.debug.internal.core.LaunchConfiguration;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -13,6 +14,7 @@ public class GCLaunchShortcut implements ILaunchShortcut {
 		if (selection instanceof StructuredSelection) {
 			StructuredSelection s = (StructuredSelection)selection;
 			IFile f = (IFile)s.getFirstElement();
+			
 		}
 	}
 
