@@ -138,16 +138,19 @@ public class GCBuilder extends IncrementalProjectBuilder {
 				if (!classFile.exists())
 					classFile.createNewFile();
 				OutputStream output = new FileOutputStream(classFile);
-				statements.write(output, new TreeCodeWriter(output));
+				statements.write(output, new TreeCodeWriter());
 				
 			} catch (IOException e) {
-				addMarker(file, e.getLocalizedMessage(), 1, IMarker.SEVERITY_ERROR);
+				addMarker(file, "Illegal class file format", 1, IMarker.SEVERITY_ERROR);
+				e.printStackTrace();
 			} catch (CoreException e) {
 				e.printStackTrace();
 			} catch (RecognitionException e) {
 				addMarker(file, e.getLocalizedMessage(), e.line, IMarker.SEVERITY_ERROR);
+				e.printStackTrace();
 			} catch (TranslationException e) {
 				addMarker(file, e.getLocalizedMessage(), e.getNode().getStartLine(), IMarker.SEVERITY_ERROR);
+				e.printStackTrace();
 			}
 			
 		}

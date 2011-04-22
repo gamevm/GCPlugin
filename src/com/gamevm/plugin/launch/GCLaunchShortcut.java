@@ -1,6 +1,7 @@
 package com.gamevm.plugin.launch;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.internal.core.LaunchConfiguration;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.viewers.ISelection;
@@ -16,6 +17,8 @@ public class GCLaunchShortcut implements ILaunchShortcut {
 			IFile f = (IFile)s.getFirstElement();
 			
 		}
+		
+		DebugPlugin.getDefault().getLaunchManager();
 	}
 
 	@Override
