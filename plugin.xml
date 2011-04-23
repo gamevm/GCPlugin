@@ -51,10 +51,19 @@
       <editor
             class="com.gamevm.plugin.editors.GCEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            default="true"
             extensions="gc"
             icon="icons/sample.gif"
             id="com.gamevm.plugin.editors.GCEditor"
             name="GC Editor">
+      </editor>
+      <editor
+            class="com.gamevm.plugin.editors.BinaryEditor"
+            default="true"
+            extensions="gbc"
+            icon="icons/sample.gif"
+            id="com.gamevm.plugin.editors.BinaryEditor"
+            name="Class File Viewer">
       </editor>
    </extension>
    <extension
