@@ -132,13 +132,20 @@ public class GCBuilder extends IncrementalProjectBuilder {
 				
 				ClassDefinition<Statement> statements = new ClassDefinition<Statement>(ast, translator);
 				
-				String name = statements.getDeclaration().getName();
-				File classFile = new File(classPath.getLocation().toFile(), name.replace('.', '/') + ".gbc");
-				classFile.getParentFile().mkdirs();
-				if (!classFile.exists())
-					classFile.createNewFile();
-				OutputStream output = new FileOutputStream(classFile);
-				statements.write(output, new TreeCodeWriter());
+				List<TranslationException> transErrors = translator.getErrors();
+				for (TranslationException e : transErrors) {
+					addMarker(file, e.getLocalizedMessage(), e.getNode().getStartLine(), IMarker.SEVERITY_ERROR);
+				}
+				
+				if (errors.size() == 0 && transErrors.size() == 0) {
+					String name = statements.getDeclaration().getName();
+					File classFile = new File(classPath.getLocation().toFile(), name.replace('.', '/') + ".gbc");
+					classFile.getParentFile().mkdirs();
+					if (!classFile.exists())
+						classFile.createNewFile();
+					OutputStream output = new FileOutputStream(classFile);
+					statements.write(output, new TreeCodeWriter());
+				}
 				
 			} catch (IOException e) {
 				addMarker(file, "Illegal class file format", 1, IMarker.SEVERITY_ERROR);

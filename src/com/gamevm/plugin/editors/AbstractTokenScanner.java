@@ -59,9 +59,12 @@ public abstract class AbstractTokenScanner implements ITokenScanner {
 
 	@Override
 	public int getTokenLength() {
-		if (lastToken != null)
-			return lastToken.getText().length();
-		else
+		if (lastToken != null) {
+			if (lastToken.getType() == GCASTLexer.STRING_LITERAL)
+				return lastToken.getText().length() + 2;
+			else
+				return lastToken.getText().length();
+		} else
 			return 0;
 	}
 
