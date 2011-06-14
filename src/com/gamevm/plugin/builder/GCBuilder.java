@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.gamevm.compiler.assembly.ClassDefinition;
-import com.gamevm.compiler.assembly.GClassLoader;
+import com.gamevm.compiler.assembly.loader.GBCDirectoryLoader;
 import com.gamevm.compiler.parser.ASTNode;
 import com.gamevm.compiler.parser.GCASTLexer;
 import com.gamevm.compiler.parser.GCASTParser;
@@ -128,7 +128,7 @@ public class GCBuilder extends IncrementalProjectBuilder {
 				
 				IFolder classPath = getProject().getFolder("bin");
 				
-				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GClassLoader(classPath.getLocation().toFile())), true);
+				ASTTranslator translator = new ASTTranslator(new SymbolTable(ast.getDeclaration(), new GBCDirectoryLoader(classPath.getLocation().toFile())), true);
 				
 				ClassDefinition<Statement> statements = new ClassDefinition<Statement>(ast, translator);
 				

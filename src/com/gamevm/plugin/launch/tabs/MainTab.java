@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 
 import com.gamevm.compiler.assembly.ClassDefinition;
-import com.gamevm.compiler.assembly.GClassLoader;
+import com.gamevm.compiler.assembly.loader.GBCDirectoryLoader;
 import com.gamevm.compiler.parser.ASTNode;
 import com.gamevm.compiler.parser.GCASTLexer;
 import com.gamevm.compiler.parser.GCASTParser;
@@ -42,7 +42,7 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	IProject project;
 	IFile mainClass;
 	
-	private GClassLoader classLoader;
+	private GBCDirectoryLoader classLoader;
 	
 	public MainTab() {
 		
